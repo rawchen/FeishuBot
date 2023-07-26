@@ -68,7 +68,7 @@ public class MessageHandler {
 		String chatType = message.getChatType();
 		String msgType = message.getMessageType();
 
-		log.info("chatType:{},msgType:{}", chatType, msgType);
+		log.info("对话类型: {}，消息类型: {}", chatType, msgType);
 
 
 		// 只处理私聊文本消息
@@ -104,7 +104,7 @@ public class MessageHandler {
 		try {
 			User user = userService.getUserByOpenId(event.getEvent().getSender().getSenderId().getOpenId());
 			String name = user.getName();
-			log.info("{}:{}", name, text);
+			log.info("{}: {}", name, text);
 		} catch (Exception e) {
 			log.error("获取用户信息失败", e);
 		}
@@ -228,7 +228,7 @@ public class MessageHandler {
 		String modelParam = Models.modelMap.get(conversation.getModel()).getSlug();
 
 
-		log.info("新建会话");
+//		log.info("新建会话");
 		conversation.setTitle(title);
 		String finalTitle = title;
 		ChatService finalChatService = chatService;
@@ -237,7 +237,7 @@ public class MessageHandler {
 		});
 
 
-		log.info("服务完成,account: {} ,model:{},chatId:{}", chatService.getAccount(), model, chatId);
+		log.info("服务完成: account: {} ,model:{},chatId:{}", chatService.getAccount(), model, chatId);
 	}
 
 	private Map<String, String> createSelection(Conversation conversation) {

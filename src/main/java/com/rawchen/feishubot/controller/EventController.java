@@ -1,7 +1,7 @@
 package com.rawchen.feishubot.controller;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
-import com.lark.oapi.core.utils.Jsons;
 import com.lark.oapi.event.EventDispatcher;
 import com.lark.oapi.sdk.servlet.ext.ServletAdapter;
 import com.lark.oapi.service.contact.v3.ContactService;
@@ -103,7 +103,9 @@ public class EventController {
 					public void handle(P2MessageReceiveV1 event) {
 						//处理消息事件
 						try {
-							log.info("收到消息: {}", Jsons.DEFAULT.toJson(event));
+//							log.info("收到消息: {}", Jsons.DEFAULT.toJson(event));
+							log.info("接收时间: {}", DateUtil.formatDateTime(
+									DateUtil.date(Long.parseLong(event.getEvent().getMessage().getCreateTime()))));
 							messageHandler.process(event);
 						} catch (Exception e) {
 							log.error("处理消息失败", e);
