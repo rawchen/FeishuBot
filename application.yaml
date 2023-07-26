@@ -1,0 +1,21 @@
+server:
+  port: 9001
+
+feishu:
+  appId:
+  appSecret:
+  encryptKey:
+  verificationToken:
+
+proxy:
+  url: http://rnproxy.zhangjiashu.tech
+
+logging:
+  level:
+    root: info
+    com.zhangjiashu: debug
+    com.lark.oapi.event.EventDispatcher: OFF
+
+
+
+

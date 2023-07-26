@@ -1,0 +1,10 @@
+#有几个账号就写几个
+#如果gpt账号是邮箱登录，只用填账号和密码，程序会自动登录获取token，不用填token
+#如果gpt账号用谷歌账号啥的登录，程序不能实现账号密码自动登录获取token，填账号，手动获取token填入token字段 https://chat.openai.com/api/auth/session
+accounts:
+- account:
+  password:
+  token:
+- account:
+  password:
+  token:
