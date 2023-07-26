@@ -104,7 +104,7 @@ public class EventController {
 						//处理消息事件
 						try {
 //							log.info("收到消息: {}", Jsons.DEFAULT.toJson(event));
-							log.info("接收时间: {}", DateUtil.formatDateTime(
+							log.info("事件时间: {}", DateUtil.formatDateTime(
 									DateUtil.date(Long.parseLong(event.getEvent().getMessage().getCreateTime()))));
 							messageHandler.process(event);
 						} catch (Exception e) {
