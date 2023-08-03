@@ -8,13 +8,14 @@ feishu:
   verificationToken:
 
 proxy:
-  url: http://rnproxy.zhangjiashu.tech
+  url: https://qqil.cn
 
 logging:
   level:
     root: info
     com.zhangjiashu: debug
-    com.lark.oapi.event.EventDispatcher: OFF
+    com.lark.oapi.event.EventDispatcher: off
+    org.apache.coyote.http11.Http11Processor: warn
 
 
 
