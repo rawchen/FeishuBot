@@ -237,7 +237,7 @@ public class MessageHandler {
 		});
 
 
-		log.info("服务完成: account: {} ,model:{},chatId:{}", chatService.getAccount(), model, chatId);
+		log.info("服务完成: {}|{}|{}|{}", chatService.getAccount(), model, chatId, messageId);
 	}
 
 	private Map<String, String> createSelection(Conversation conversation) {

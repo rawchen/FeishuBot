@@ -13,7 +13,7 @@ proxy:
 logging:
   level:
     root: info
-    com.zhangjiashu: debug
+    com.rawchen: debug
     com.lark.oapi.event.EventDispatcher: off
     org.apache.coyote.http11.Http11Processor: warn
 

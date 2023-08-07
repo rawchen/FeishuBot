@@ -54,6 +54,9 @@ public class MessageCard {
 			initChatGptAnswerMessageCard();
 		}
 		JSONObject markdownElement = gptAnswerMessageCard.getJSONArray("elements").getJSONObject(0);
+		// 目前消息卡片不支持“```”代码块样式输出，因此可能会将代码块中一起出现“<”、“!”内容误识别xss注入后删掉
+		// https://open.feishu.cn/document/common-capabilities/message-card/message-cards-content/using-markdown-tags
+		content = StringUtil.replaceSpecialSymbol(content);
 		markdownElement.put("content", content);
 		JSONObject titleObject = gptAnswerMessageCard.getJSONObject("header").getJSONObject("title");
 		titleObject.put("content", title);

@@ -37,10 +37,6 @@ public class MessageService {
 
 	private PatchMessageReq createPatchMessageReq(String messageId, String content) {
 
-		// 目前消息卡片不支持“```”代码块样式输出，因此可能会将代码块中内容误识别xss注入后删掉
-		// https://open.feishu.cn/document/common-capabilities/message-card/message-cards-content/using-markdown-tags
-		content = StringUtil.replaceSpecialSymbol(content);
-
 		return PatchMessageReq.newBuilder()
 				.messageId(messageId)
 				.patchMessageReqBody(PatchMessageReqBody.newBuilder()
