@@ -8,7 +8,7 @@ feishu:
   verificationToken:
 
 proxy:
-  url: https://qqil.cn
+  url: http://proxy.zhangjiashu.cn
 
 logging:
   level:
