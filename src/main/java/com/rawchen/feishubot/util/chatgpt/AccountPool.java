@@ -59,7 +59,7 @@ public class AccountPool {
 				if (ok) {
 					log.debug("账号{}登录成功", account.getAccount());
 					account.setToken(chatService.getAccessToken());
-					accountService.updateTokenForAccount(account.getAccount(), chatService.getAccessToken());
+//					accountService.updateTokenForAccount(account.getAccount(), chatService.getAccessToken());
 
 				} else {
 					//ChatGpt登录失败
@@ -69,37 +69,39 @@ public class AccountPool {
 			}
 
 			//查询账号是否plus用户
-			boolean b = chatService.queryAccountLevel();
+//			boolean b = chatService.queryAccountLevel();
 			//如果token失效，重新登录，更新token，重新查询一次
-			if (!b) {
-				log.debug("账号{}登录失效", account.getAccount());
-				log.debug("账号{}重新登录", account.getAccount());
-				boolean ok = chatService.build();
-				if (ok) {
-					//重新登录成功
-					account.setToken(chatService.getAccessToken());
-					accountService.updateTokenForAccount(account.getAccount(), chatService.getAccessToken());
-					b = chatService.queryAccountLevel();
-					if (!b) {
-						continue;
-					}
-				} else {
-					//ChatGpt登录失败
-					log.error("账号{}登录失败", account.getAccount());
-					continue;
-				}
-			}
+//			if (!b) {
+//				log.debug("账号{}登录失效", account.getAccount());
+//				log.debug("账号{}重新登录", account.getAccount());
+//				boolean ok = chatService.build();
+//				if (ok) {
+//					//重新登录成功
+//					account.setToken(chatService.getAccessToken());
+//					accountService.updateTokenForAccount(account.getAccount(), chatService.getAccessToken());
+//					b = chatService.queryAccountLevel();
+//					if (!b) {
+//						continue;
+//					}
+//				} else {
+//					//ChatGpt登录失败
+//					log.error("账号{}登录失败", account.getAccount());
+//					continue;
+//				}
+//			}
 
 
 			usefulAccounts.add(account.getAccount());
 			accountPool.put(account.getAccount(), chatService);
 			size++;
 			if (chatService.getLevel() == 3) {
-				log.info("账号{}为normal用户", account.getAccount());
+//				log.info("账号{}为normal用户", account.getAccount());
+				log.info("账号{}为normal用户", account.getToken());
 				normalPool.put(account.getAccount(), chatService);
 			}
 			if (chatService.getLevel() == 4) {
-				log.info("账号{}为plus用户", account.getAccount());
+//				log.info("账号{}为plus用户", account.getAccount());
+				log.info("账号{}为plus用户", account.getToken());
 				plusPool.put(account.getAccount(), chatService);
 			}
 		}

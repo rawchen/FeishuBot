@@ -10,7 +10,8 @@ public class Models {
 	/**
 	 * plus用户默认模型
 	 */
-	public static final String PLUS_DEFAULT_MODEL = "Default (GPT-3.5)";
+//	public static final String PLUS_DEFAULT_MODEL = "Default (GPT-3.5)";
+	public static final String PLUS_DEFAULT_MODEL = "gpt-3.5-turbo";
 
 	/**
 	 * 普通用户默认模型

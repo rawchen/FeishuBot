@@ -1,13 +1,15 @@
 package com.rawchen.feishubot.util;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
 /**
  * 机器人回复消息卡片消息格式
  */
+@Slf4j
 public class MessageCard {
 	private static JSONObject gptAnswerMessageCard;
 
@@ -34,12 +36,18 @@ public class MessageCard {
 //    line.put("tag", "hr");
 
 		JSONObject jsonMessage = new JSONObject();
-		jsonMessage.put("header", header);
-		jsonMessage.put("config", config);
 //    jsonMessage.put("elements", new JSONArray().put(markdownElement).put(line));
-		jsonMessage.put("elements", new JSONArray().put(markdownElement));
+		JSONArray elements = new JSONArray();
+		elements.add(markdownElement);
+		jsonMessage.put("elements", elements);
 
-		gptAnswerMessageCard = jsonMessage;
+		JSONObject jsonBody = new JSONObject();
+		jsonBody.put("header", header);
+		jsonBody.put("config", config);
+		jsonBody.put("schema", "2.0");
+		jsonBody.put("body", jsonMessage);
+
+		gptAnswerMessageCard = jsonBody;
 	}
 
 	/**
@@ -53,9 +61,11 @@ public class MessageCard {
 		if (gptAnswerMessageCard == null) {
 			initChatGptAnswerMessageCard();
 		}
-		JSONObject markdownElement = gptAnswerMessageCard.getJSONArray("elements").getJSONObject(0);
+		JSONObject markdownElement = gptAnswerMessageCard.getJSONObject("body").getJSONArray("elements").getJSONObject(0);
 		// 目前消息卡片不支持“```”代码块样式输出，因此可能会将代码块中一起出现“<”、“!”内容误识别xss注入后删掉
 		// https://open.feishu.cn/document/common-capabilities/message-card/message-cards-content/using-markdown-tags
+		// 卡片 JSON 2.0已支持基本的Markdown格式，除了![]()此格式飞书对链接做了校验，只能允许上传图片接口获取的key
+		// https://open.feishu.cn/document/uAjLw4CM/ukzMukzMukzM/feishu-cards/card-components/content-components/rich-text
 		content = StringUtil.replaceSpecialSymbol(content);
 		markdownElement.put("content", content);
 		JSONObject titleObject = gptAnswerMessageCard.getJSONObject("header").getJSONObject("title");
@@ -77,17 +87,18 @@ public class MessageCard {
 		}
 		ofGptAnswerMessageCard(title, content);
 		JSONObject selection = new JSONObject();
-		JSONArray array = (JSONArray) gptAnswerMessageCard.get("elements");
+		JSONArray array = new JSONArray();
+		array.add(gptAnswerMessageCard.get("elements"));
 
 		JSONObject tip = new JSONObject();
-		array.put(tip);
+		array.add(tip);
 		tip.put("tag", "div");
 		JSONObject tipText = new JSONObject();
 		tipText.put("content", "请选择接下来对话模型(不选则默认当前模型)");
 		tipText.put("tag", "plain_text");
 		tip.put("text", tipText);
 
-		array.put(selection);
+		array.add(selection);
 		selection.put("tag", "action");
 
 		JSONArray actions = new JSONArray();
@@ -95,7 +106,7 @@ public class MessageCard {
 
 		JSONObject action = new JSONObject();
 		action.put("tag", "select_static");
-		actions.put(action);
+		actions.add(action);
 
 		JSONObject placeholder = new JSONObject();
 		placeholder.put("content", "当前会话模型");
@@ -108,7 +119,7 @@ public class MessageCard {
 
 		for (String s : selections.keySet()) {
 			JSONObject option = new JSONObject();
-			options.put(option);
+			options.add(option);
 			option.put("value", selections.get(s));
 			JSONObject text = new JSONObject();
 			text.put("content", s);

@@ -1,6 +1,8 @@
 package com.rawchen.feishubot.handler;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.lark.oapi.Client;
 import com.lark.oapi.service.contact.v3.model.User;
 import com.lark.oapi.service.im.v1.model.*;
@@ -18,7 +20,6 @@ import com.rawchen.feishubot.util.chatgpt.ConversationPool;
 import com.rawchen.feishubot.util.chatgpt.RequestIdSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -45,7 +46,8 @@ public class MessageHandler {
 	 * @return
 	 */
 	private boolean checkInvalidEvent(P2MessageReceiveV1 event) {
-		String requestId = event.getRequestId();
+//		String requestId = event.getRequestId();
+		String requestId = event.getHeader().getEventId();
 		// 根据内存记录的消息事件id去重
 		if (RequestIdSet.requestIdSet.contains(requestId)) {
 			//log.warn("重复请求，requestId:{}", requestId);
@@ -93,8 +95,9 @@ public class MessageHandler {
 		if (!checkInvalidEvent(event)) {
 			return;
 		}
-		JSONObject jsonObject = new JSONObject(message.getContent());
-		String text = jsonObject.optString("text");
+		log.info("事件时间: {}", DateUtil.formatDateTime(DateUtil.date(Long.parseLong(event.getEvent().getMessage().getCreateTime()))));
+		JSONObject jsonObject = JSONObject.parseObject(message.getContent());
+		String text = jsonObject.getString("text");
 
 		// 去掉事件获取开头的"@_user_1"
 		if (text.startsWith("@_user_1")) {
@@ -125,7 +128,8 @@ public class MessageHandler {
 			conversation = new Conversation();
 			chatService = accountPool.getFreeChatService(Models.EMPTY_MODEL);
 			if (chatService != null) {
-				if (chatService.getLevel() == 4) {
+//				if (chatService.getLevel() == 4) {
+				if (chatService.getLevel() == 3) {
 					model = Models.PLUS_DEFAULT_MODEL;
 				} else {
 					model = Models.NORMAL_DEFAULT_MODEL;
@@ -157,21 +161,21 @@ public class MessageHandler {
 			}
 
 			//如果是fast模式，则需要切换账号服务
-			if (conversation.getMode() == Mode.FAST) {
-				chatService = accountPool.getFreeChatService(Models.EMPTY_MODEL);
-				if (chatService == null) {
-					messageService.sendTextMessageByChatId(chatId, "目前无空闲该模型，请稍后再试，或者更换模型");
-					return;
-				} else {
-					conversation.setAccount(chatService.getAccount());
-
-					if (chatService.getLevel() == 4) {
-						conversation.setModel(Models.PLUS_DEFAULT_MODEL);
-					} else {
-						conversation.setModel(Models.NORMAL_DEFAULT_MODEL);
-					}
-				}
-			}
+//			if (conversation.getMode() == Mode.FAST) {
+//				chatService = accountPool.getFreeChatService(Models.EMPTY_MODEL);
+//				if (chatService == null) {
+//					messageService.sendTextMessageByChatId(chatId, "目前无空闲该模型，请稍后再试，或者更换模型");
+//					return;
+//				} else {
+//					conversation.setAccount(chatService.getAccount());
+//
+//					if (chatService.getLevel() == 4) {
+//						conversation.setModel(Models.PLUS_DEFAULT_MODEL);
+//					} else {
+//						conversation.setModel(Models.NORMAL_DEFAULT_MODEL);
+//					}
+//				}
+//			}
 		}
 
 		//账号池里所有的账号都在运行
@@ -217,6 +221,10 @@ public class MessageHandler {
 			title += "  [plus] ";
 		}
 
+		String modelParam = Models.PLUS_DEFAULT_MODEL;
+		title = modelParam;
+//		model = modelParam;
+
 //    title += "「" + conversation.getMode() + "」";
 
 
@@ -225,8 +233,7 @@ public class MessageHandler {
 
 //    Map<String, String> selections = createSelection(conversation);
 
-		String modelParam = Models.modelMap.get(conversation.getModel()).getSlug();
-
+//		String modelParam = Models.modelMap.get(conversation.getModel()).getSlug();
 
 //		log.info("新建会话");
 		conversation.setTitle(title);
@@ -237,7 +244,8 @@ public class MessageHandler {
 		});
 
 
-		log.info("服务完成: {}|{}|{}|{}", chatService.getAccount(), model, chatId, messageId);
+//		log.info("服务完成: {}|{}|{}|{}", chatService.getAccount(), model, chatId, messageId);
+		log.info("服务完成: {}|{}|{}|{}\n", chatService.getAccessToken(), model, chatId, messageId);
 	}
 
 	private Map<String, String> createSelection(Conversation conversation) {
@@ -290,8 +298,8 @@ public class MessageHandler {
 			return;
 		}
 		Conversation conversation = conversationPool.getConversation(chatId);
-		conversation.setParentMessageId(answer.getMessage().getId());
-		conversation.setConversationId(answer.getConversationId());
+//		conversation.setParentMessageId(answer.getMessage().getId());
+//		conversation.setConversationId(answer.getConversationId());
 
 		if (!answer.isFinished()) {
 			chatService.setStatus(Status.RUNNING);
@@ -314,6 +322,11 @@ public class MessageHandler {
 			return;
 		}
 		PatchMessageResp resp1 = messageService.modifyGptAnswerMessageCard(messageId, title, content);
+		if (resp1.getCode() != 0) {
+			log.error("code: {}", resp1.getCode());
+			log.error("msg: {}", resp1.getMsg());
+			log.error("error msg: {}", resp1.getError().getMessage());
+		}
 
 		if (answer.isFinished() && resp1.getCode() == 230020) {
 			//保证最后完整的gpt响应 不会被飞书消息频率限制

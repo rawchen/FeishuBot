@@ -2,13 +2,13 @@ server:
   port: 9001
 
 feishu:
-  appId:
-  appSecret:
+  appId: cli_a44axxxxxxxxxxx
+  appSecret: 9GLUNqVTusxAxxxxxxxxxxxxxxxxxxxxx
   encryptKey:
   verificationToken:
 
 proxy:
-  url: http://proxy.zhangjiashu.cn
+  url: https://api.baizhi.ai
 
 logging:
   level:
